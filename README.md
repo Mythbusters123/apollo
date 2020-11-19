@@ -1,7 +1,12 @@
+<div align="center">
+
+# Apollo Client
+
 [![Discord](https://img.shields.io/discord/740991579342503936?color=informational&label=%20&logo=discord&logoColor=white&style=for-the-badge)](https://discord.gg/mAx8Phh)
 
-# Apollo
+</div>
 
+## About
 Apollo is a Hypixel oriented pvp client for 1.8.9 that uses the [Sponge Mixin API](https://github.com/SpongePowered/Mixin) to hook into game events and inject into Minecraft. Apollo will have countless modules enjoyed by the forge community as well as an SDK to develop and profit off your own modules and cosmetics!
 
 ### Forum Post
@@ -11,7 +16,7 @@ If you create any forum post for the client put the link below so we can keep tr
 - https://hypixel.net/threads/apollo-client-discord-new-hypixel-client.3219735/#post-22502168
 - https://hypixel.net/threads/apollo-client-what-is-apollo-client-unique-1-8-9-pvp-client-for-hypixel-more.3304557/
 
-# Development Setup
+## Development Setup
 
 First you will need to set up a development workspace with the Apollo source code. You can do this by downloading the repository, opening the `build.gradle` as a project in IntelliJ IDEA and running the following commands from terminal or gradle window.
 
