@@ -18,7 +18,7 @@ If you create any forum post for the client put the link below so we can keep tr
 
 ## Development Setup
 
-First you will need to set up a development workspace with the Apollo source code. You can do this by downloading the repository, opening the `build.gradle` as a project in IntelliJ IDEA and running the following commands from terminal or gradle window.
+You will first need to set up a development workspace with the Apollo source code. You can do this by downloading the repository, opening the `build.gradle` as a project in IntelliJ IDEA and running the following commands from terminal or gradle window.
 
 ```bash
 ./gradlew setupDecompWorkspace
