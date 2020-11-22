@@ -35,11 +35,11 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 /**
- * Loads needed files on startup to avoid
- * game freezing.
+ * Helper methods used to download data from the https://static.apolloclient.net web server
+ * asynchronously to avoid game freezing on startup
  *
  * @author Icovid | Icovid#3888
- * @since b0.2
+ * @since 1.2.0-BETA
  */
 public class DataDownloader {
 
