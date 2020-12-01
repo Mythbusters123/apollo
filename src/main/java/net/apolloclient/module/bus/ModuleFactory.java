@@ -31,10 +31,12 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /**
  * Creates modules of type {@link ModuleContainer} or {@link DraggableModuleContainer} by
@@ -62,6 +64,8 @@ public class ModuleFactory {
         CopyOnWriteArrayList<Class<?>> classes = new CopyOnWriteArrayList<>(reflections.getTypesAnnotatedWith(Module.class));
         classes.sort(Comparator.comparingInt(module -> module.getAnnotation(Module.class).priority()));
 
+        ArrayList<Class<?>> externalClasses = new ArrayList<>();
+
         for (Class<?> clazz : classes) {
             try {
                 Object class_instance = clazz.newInstance();
@@ -85,10 +89,72 @@ public class ModuleFactory {
             }
         }
 
-        // TODO: EXTERNAL MOD LOADING!
+        File[] mods = modsFolder.listFiles();
+        if(mods != null){
+            List<Class<?>> tempClasses = new ArrayList<>();
+            for(File file : mods){
+                if(!file.getName().endsWith(".jar")){
+                    continue;
+                }
+                try {
+                    JarFile jarFile = new JarFile(file);
+                    Enumeration<JarEntry> e = jarFile.entries();
+
+                    URL[] urls = { new URL("jar:file:" + file +"!/")};
+                    URLClassLoader cl = URLClassLoader.newInstance(urls);
+
+                    while(e.hasMoreElements()) {
+                        JarEntry je = e.nextElement();
+                        if(je.isDirectory() || !je.getName().endsWith(".class")) continue;
+                        String className = je.getName().substring(0, je.getName().length()-6);
+                        className = className.replace('/', '.');
+                        Class<?> c = cl.loadClass(className);
+                        tempClasses.add(c);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            sharedMethods.putAll(loadExternalClasses(tempClasses));
+        }
 
         this.registerSharedListeners(sharedMethods);
     }
+
+    /**
+     * Loads external classes
+     *
+     * Done to make it less messy in constructor
+     * @param classes - list of classes to determine to load
+     * @returns Map
+     */
+    public Map<ModContainer, CopyOnWriteArrayList<Method>> loadExternalClasses(List<Class<?>> classes){
+        Map<ModContainer, CopyOnWriteArrayList<Method>> sharedMethods = new LinkedHashMap<>();
+        for (Class<?> clazz : classes) {
+            try {
+                Object class_instance = clazz.newInstance();
+                ModContainer container;
+
+                if (class_instance instanceof Draggable) {
+                    container = new DraggableModuleContainer(clazz.getAnnotation(Module.class), ((Draggable) class_instance).getDefaultScreenPositionScreenPosition(), clazz.newInstance());
+                } else {
+                    container = new ModuleContainer(clazz.getAnnotation(Module.class), clazz.newInstance());
+                }
+
+                this.handleInstance(container);
+                sharedMethods.put(container, new CopyOnWriteArrayList<>());
+                sharedMethods.get(container).addAll(this.register(container));
+                container.post(new InitializationEvent(container));
+                modules.add(container);
+            }
+            catch (Exception e) {
+                Apollo.error("Unable to create module instance of " + clazz.getCanonicalName());
+                e.printStackTrace();
+            }
+        }
+        return sharedMethods;
+    }
+
 
     /**
      * Get {@link ModContainer} by its name

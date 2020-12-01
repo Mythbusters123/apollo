@@ -42,10 +42,18 @@ public class ApolloTweaker implements ITweaker {
 
     private final List<String> launchArguments = new ArrayList<>();
 
+    /**
+     * GameDir - used in other classes
+     *
+     * @see net.apolloclient.Apollo
+     * @see net.apolloclient.module.bus.ModuleFactory
+     */
+    public static File gameDir;
+
     @Override
     public void acceptOptions(List<String> args, File gameDir, File assetsDir, String profile) {
         this.launchArguments.addAll(args);
-
+        ApolloTweaker.gameDir = gameDir;
         if (!args.contains("--version") && profile != null) {
             launchArguments.add("--version");
             launchArguments.add(profile);
