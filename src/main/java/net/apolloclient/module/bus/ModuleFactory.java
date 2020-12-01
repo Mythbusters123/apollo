@@ -19,6 +19,7 @@ package net.apolloclient.module.bus;
 
 import net.apolloclient.Apollo;
 import net.apolloclient.event.bus.HandlerEventContainer;
+import net.apolloclient.mixins.ApolloTweaker;
 import net.apolloclient.module.bus.draggable.Draggable;
 import net.apolloclient.module.DraggableModuleContainer;
 import net.apolloclient.module.ModuleContainer;
@@ -125,11 +126,17 @@ public class ModuleFactory {
      * Loads external classes
      *
      * Done to make it less messy in constructor
-     * @param classes - list of classes to determine to load
+     * @param clazzes - list of classes to determine to load
      * @returns Map
      */
-    public Map<ModContainer, CopyOnWriteArrayList<Method>> loadExternalClasses(List<Class<?>> classes){
+    public Map<ModContainer, CopyOnWriteArrayList<Method>> loadExternalClasses(List<Class<?>> clazzes){
         Map<ModContainer, CopyOnWriteArrayList<Method>> sharedMethods = new LinkedHashMap<>();
+
+        Reflections reflections = new Reflections(ApolloTweaker.gameDir + "/mods");
+
+        CopyOnWriteArrayList<Class<?>> classes = new CopyOnWriteArrayList<>(reflections.getTypesAnnotatedWith(Module.class));
+        classes.sort(Comparator.comparingInt(module -> module.getAnnotation(Module.class).priority()));
+
         for (Class<?> clazz : classes) {
             try {
                 Object class_instance = clazz.newInstance();
