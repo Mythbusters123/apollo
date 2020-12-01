@@ -23,6 +23,7 @@ import net.apolloclient.event.bus.EventBus;
 import net.apolloclient.event.bus.SubscribeEvent;
 import net.apolloclient.event.impl.client.input.KeyPressedEvent;
 import net.apolloclient.gui.ModulesGUI;
+import net.apolloclient.mixins.ApolloTweaker;
 import net.apolloclient.module.bus.ModContainer;
 import net.apolloclient.module.bus.ModuleFactory;
 import net.apolloclient.module.bus.event.PostInitializationEvent;
@@ -30,6 +31,7 @@ import net.apolloclient.utils.font.ApolloFontRenderer;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.input.Keyboard;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -53,7 +55,7 @@ public class Apollo {
 
     public static final EventBus EVENT_BUS = new EventBus();
     public static final CommandBus COMMAND_BUS = new CommandBus();
-    public static final ModuleFactory MODULE_FACTORY = new ModuleFactory("net.apolloclient.module.impl", null);
+    public static final ModuleFactory MODULE_FACTORY = new ModuleFactory("net.apolloclient.module.impl", new File(ApolloTweaker.gameDir.getAbsolutePath() + "/mods"));
 
     /**
      * Called on Minecraft startup.

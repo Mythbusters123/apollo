@@ -130,11 +130,14 @@ public class ModuleFactory {
      * @returns Map
      */
     public Map<ModContainer, CopyOnWriteArrayList<Method>> loadExternalClasses(List<Class<?>> clazzes){
-        Map<ModContainer, CopyOnWriteArrayList<Method>> sharedMethods = new LinkedHashMap<>();
+        CopyOnWriteArrayList<Class<?>> classes = new CopyOnWriteArrayList<>();
+        HashMap<ModContainer, CopyOnWriteArrayList<Method>> sharedMethods = new HashMap<>();
+        for(Class<?> clazz2: clazzes){
+            if(!clazz2.isAnnotationPresent(Module.class)) continue;
 
-        Reflections reflections = new Reflections(ApolloTweaker.gameDir + "/mods");
+            classes.add(clazz2);
+        }
 
-        CopyOnWriteArrayList<Class<?>> classes = new CopyOnWriteArrayList<>(reflections.getTypesAnnotatedWith(Module.class));
         classes.sort(Comparator.comparingInt(module -> module.getAnnotation(Module.class).priority()));
 
         for (Class<?> clazz : classes) {
