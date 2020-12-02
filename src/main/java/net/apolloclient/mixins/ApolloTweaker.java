@@ -25,7 +25,10 @@ import org.spongepowered.asm.mixin.Mixins;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /**
  * Implementation of {@link ITweaker} used to add the {@code mixins.apollo.json} configuration to the default {@link
@@ -76,6 +79,29 @@ public class ApolloTweaker implements ITweaker {
 
         MixinEnvironment env = MixinEnvironment.getDefaultEnvironment();
         Mixins.addConfiguration("mixins.apollo.json");
+
+        File modsFolder = new File(gameDir + "/mods");
+
+        File[] mods = modsFolder.listFiles();
+
+        assert mods != null;
+        for(File file : mods) {
+            if(!file.getName().endsWith(".jar")) continue;
+
+            try{
+                JarFile jarFile = new JarFile(file);
+                Enumeration<JarEntry> e = jarFile.entries();
+                while(e.hasMoreElements()){
+                    JarEntry je = e.nextElement();
+                    if(!je.getName().endsWith(".json") && !je.getName().startsWith("mixins.")) continue;
+
+                    Mixins.addConfiguration(je.getName());
+                }
+
+
+            } catch (Exception e) { e.printStackTrace(); }
+        }
+
 
         if (env.getObfuscationContext() == null) {
             env.setObfuscationContext("notch");

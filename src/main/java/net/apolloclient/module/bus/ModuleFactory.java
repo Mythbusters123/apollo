@@ -91,6 +91,7 @@ public class ModuleFactory {
         }
 
         File[] mods = modsFolder.listFiles();
+        if(modsFolder.exists()) modsFolder.mkdir();
         if(mods != null){
             List<Class<?>> tempClasses = new ArrayList<>();
             for(File file : mods){
@@ -131,7 +132,7 @@ public class ModuleFactory {
      */
     public Map<ModContainer, CopyOnWriteArrayList<Method>> loadExternalClasses(List<Class<?>> clazzes){
         CopyOnWriteArrayList<Class<?>> classes = new CopyOnWriteArrayList<>();
-        HashMap<ModContainer, CopyOnWriteArrayList<Method>> sharedMethods = new HashMap<>();
+        Map<ModContainer, CopyOnWriteArrayList<Method>> sharedMethods = new HashMap<>();
         for(Class<?> clazz2: clazzes){
             if(!clazz2.isAnnotationPresent(Module.class)) continue;
 
